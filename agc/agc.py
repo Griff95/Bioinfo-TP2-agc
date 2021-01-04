@@ -23,13 +23,13 @@ from collections import Counter
 # ftp://ftp.ncbi.nih.gov/blast/matrices/
 import nwalign3 as nw
 
-__author__ = "Your Name"
+__author__ = "Pierre Cote"
 __copyright__ = "Universite Paris Diderot"
-__credits__ = ["Your Name"]
+__credits__ = ["Pierre Cote"]
 __license__ = "GPL"
 __version__ = "1.0.0"
-__maintainer__ = "Your Name"
-__email__ = "your@email.fr"
+__maintainer__ = "Pierre Cote"
+__email__ = "cotepierre@eisti.eu"
 __status__ = "Developpement"
 
 
@@ -55,7 +55,7 @@ def get_arguments():
     parser = argparse.ArgumentParser(description=__doc__, usage=
                                      "{0} -h"
                                      .format(sys.argv[0]))
-    parser.add_argument('-i', '-amplicon_file', dest='amplicon_file', type=isfile, required=True, 
+    parser.add_argument('-i', '-amplicon_file', dest='amplicon_file', type=isfile, required=True,
                         help="Amplicon is a compressed fasta file (.fasta.gz)")
     parser.add_argument('-s', '-minseqlen', dest='minseqlen', type=int, default = 400,
                         help="Minimum sequence length for dereplication")
@@ -69,12 +69,32 @@ def get_arguments():
                         default="OTU.fasta", help="Output file")
     return parser.parse_args()
 
+import re
 def read_fasta(amplicon_file, minseqlen):
-    pass
+    with gzip.open(amplicon_file, 'rb') as fasta:
+        content = fasta.read().decode('utf-8')
+    p = re.compile(r">\w+\n([ATCG\n]+)")
+    completes = p.findall(content)
+    completes = list(map(lambda x: x.replace('\n', ''), completes))
+    # print(completes, file=sys.stderr)
+    for seq in completes:
+        if len(seq) >= minseqlen:
+            yield seq
+        # chunks, chunk_size = len(comp), minseqlen
+        # seq = [ comp[i:i+chunk_size] for i in range(0, chunks+1, chunk_size)]
+        # print(seq, file=sys.stderr)
+        # break
+        # for s in seq:
+        #     yield s
 
-
+from collections import defaultdict
 def dereplication_fulllength(amplicon_file, minseqlen, mincount):
-    pass
+    dict = defaultdict(int)
+    for seq in read_fasta(amplicon_file, minseqlen):
+        dict[seq] += 1
+    for key, value in sorted(dict.items(), key = lambda x: x[1], reverse=True):
+        if value >= mincount:
+            yield key, value
 
 
 def get_chunks(sequence, chunk_size):
@@ -84,7 +104,7 @@ def get_unique(ids):
     return {}.fromkeys(ids).keys()
 
 
-def common(lst1, lst2): 
+def common(lst1, lst2):
     return list(set(lst1) & set(lst2))
 
 def cut_kmer(sequence, kmer_size):

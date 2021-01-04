@@ -1,3 +1,5 @@
+agc/__pycache__
+tests/__pycache__
 __py_cache__
 i*.pyc
 .coverage
