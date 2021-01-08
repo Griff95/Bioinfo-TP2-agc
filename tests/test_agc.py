@@ -46,7 +46,7 @@ def test_get_chunks():
     # we should obtain 4 chunks of the correct size
     assert(len(chunks) == 4)
     # a 80nt chunk
-    assert(chunks[0] == seq[0:50]) 
+    assert(chunks[0] == seq[0:50])
     # a 80nt chunk
     assert(chunks[1] == seq[50:100])
 
@@ -122,7 +122,7 @@ def test_get_identity():
 #     for i in range(len(chunk_seq_list)):
 #         for l,chunk in enumerate(chunk_chim):
 #             perc_identity_matrix[l].append(get_identity(
-#                         nw.global_align(chunk, chunk_seq_list[i][l], 
+#                         nw.global_align(chunk, chunk_seq_list[i][l],
 #                             gap_open=-1, gap_extend=-1, matrix=os.path.abspath(os.path.join(os.path.dirname(__file__),
 #                                                 '../agc')) + "/MATCH")))
 #     # [[48.89, 100.0], [51.16, 100.0], [84.62, 58.54], [94.74, 45.65]]
@@ -150,12 +150,3 @@ def test_write_OTU():
     write_OTU(otu, test_file)
     with open(test_file, 'rb') as otu_test:
         assert hashlib.md5(otu_test.read()).hexdigest() == "0a7caf3d43ba5f0c68bc05cb74782dbb"
-
-
-
-
-
-
-
-
-
